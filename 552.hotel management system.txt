@@ -1,0 +1,132 @@
+#include <stdio.h>
+#include <string.h>
+
+// Structure to represent a hotel room
+struct Room {
+    int roomID;
+    char type[20];  // e.g., Single, Double, Suite
+    double price;
+    int isAvailable; // 1 = Available, 0 = Booked
+};
+
+// Function to add a new room
+void addRoom(struct Room *rooms, int *count) {
+    printf("Enter Room ID: ");
+    scanf("%d", &rooms[*count].roomID);
+    getchar();  // To consume the newline character left by scanf
+
+    printf("Enter Room Type (Single/Double/Suite): ");
+    fgets(rooms[*count].type, 20, stdin);
+    rooms[*count].type[strcspn(rooms[*count].type, "\n")] = '\0';
+
+    printf("Enter Room Price: ");
+    scanf("%lf", &rooms[*count].price);
+
+    rooms[*count].isAvailable = 1;  // Room is available by default
+    (*count)++;
+    printf("Room added successfully!\n");
+}
+
+// Function to display all rooms
+void displayRooms(struct Room *rooms, int count) {
+    if (count == 0) {
+        printf("No rooms available in the hotel.\n");
+    } else {
+        printf("\nList of Hotel Rooms:\n");
+        printf("ID\tType\t\tPrice\tAvailability\n");
+        printf("-------------------------------------------\n");
+        for (int i = 0; i < count; i++) {
+            printf("%d\t%s\t\t%.2f\t%s\n", rooms[i].roomID, rooms[i].type,
+                   rooms[i].price, rooms[i].isAvailable ? "Available" : "Booked");
+        }
+    }
+}
+
+// Function to book a room
+void bookRoom(struct Room *rooms, int count) {
+    int id;
+    printf("Enter Room ID to book: ");
+    scanf("%d", &id);
+
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (rooms[i].roomID == id) {
+            if (rooms[i].isAvailable) {
+                rooms[i].isAvailable = 0;
+                printf("Room %d booked successfully!\n", id);
+            } else {
+                printf("Room %d is already booked.\n", id);
+            }
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Room not found.\n");
+    }
+}
+
+// Function to cancel a booking
+void cancelBooking(struct Room *rooms, int count) {
+    int id;
+    printf("Enter Room ID to cancel booking: ");
+    scanf("%d", &id);
+
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (rooms[i].roomID == id) {
+            if (!rooms[i].isAvailable) {
+                rooms[i].isAvailable = 1;
+                printf("Booking for Room %d canceled successfully!\n", id);
+            } else {
+                printf("Room %d is already available.\n", id);
+            }
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Room not found.\n");
+    }
+}
+
+int main() {
+    struct Room rooms[100];  // Array to store hotel rooms
+    int count = 0;  // Keep track of the number of rooms
+    int choice;
+
+    while (1) {
+        printf("\nHotel Management System\n");
+        printf("1. Add Room\n");
+        printf("2. Display All Rooms\n");
+        printf("3. Book Room\n");
+        printf("4. Cancel Booking\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addRoom(rooms, &count);
+                break;
+            case 2:
+                displayRooms(rooms, count);
+                break;
+            case 3:
+                bookRoom(rooms, count);
+                break;
+            case 4:
+                cancelBooking(rooms, count);
+                break;
+            case 5:
+                printf("Exiting system...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
